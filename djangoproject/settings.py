@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apps.lections.l1.l1app',
+    'apps.lections.l2.l2app',
     'apps.seminars.s1.s1app',
     'apps.hw.hw1app',
 ]

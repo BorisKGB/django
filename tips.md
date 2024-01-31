@@ -64,3 +64,82 @@ will lead to http://localhost:8000/lections/l1/ as an index page. Be aware of '/
 
 for logging configuration you can set project/$projectname/settings.py:LOGGING to needed logging.config.dictConfig structure
 see created example in file
+
+---
+
+for use django models need to make migrations
+you can create migration logic for your models by
+`python3 manage.py makemigrations [app]`
+
+If app is not set it will apply for all apps. Use app name, not import like path.
+
+You will need to rerun this command when you change your models
+
+example `python3 manage.py makemigrations l2app`
+
+---
+
+after create 'migrations' you need to apply them to DataBase by doing
+`python3 manage.py migrate [app]`
+https://djangodoc.ru/3.2/ref/django-admin/#django-admin-migrate
+
+If app not set it will apply for all apps. Use app name, not import like path.
+
+example `python3 manage.py migrate l2app`
+
+---
+
+You can create custom commands for admin actions using `manage.py ...`  
+Command name must be unique or will be overwritten https://docs.djangoproject.com/en/5.0/howto/custom-management-commands/#overriding-commands
+
+For that inside your app create package `management` and inside that another package `commands` where you can store new commands
+See `apps.lections.l2.l2app` for example
+
+To run just do `python3 manage.py $your_command [argumants if any]`
+add `-h` to get help
+
+---
+
+operations with SQL can be done through Model Objects
+
+create:
+```
+  user = User(**user_data)  # create object
+  user.save()  # dump object to sql
+```
+
+get:
+```
+  User.objects.all()  # get all data from table
+  User.objects.get(key=val)  # get data where $key = $val. Will raise an error if nothing was founded
+  User.objects.filter(key=val).first()
+    # search first value for data where $key = $val. return None if nothing was founded
+    # you can use `pk` (for primary key) to search by id
+    # not exact filtering can be used by asking for `key__$modifier`
+    #  for example filter(name__startswith="he")
+    # some modifiers: exact, iexact, contains, in, gt, gte, lt, lte, startswith, endswith, range, date, year
+    # all queries work as generators and will be executed only when something tryes to get data from them
+    # you also can use all/filter with list slicing to implement OFFSET and LIMIT
+    #  for example all()[5:10] -> OFFSET 5 LIMIT 5 (5 objects from 5 to 10)
+    #  all()[:5] -> LIMIT 5 (get first 5 objects)
+    #  negative indexing not available [-1] cann not be done
+    #  all()[:10:2] -> will get every second object from first 10. This query will be executed at place because 'every second' will need to get the data
+``` 
+  more https://metanit.com/python/django/5.13.php https://djangodoc.ru/3.2/topics/db/queries/ 
+
+update:
+```
+  user = User.objects.filter(pk=1).first()  # get existing record
+  user.name = "new name"  # change it
+  user.save()
+```
+
+delete:
+```
+  user = User.objects.filter(pk=1).first()  # get existing record
+  if user is not None:  # check record existence
+    user.delete()  # delete it
+```
+
+---
+
