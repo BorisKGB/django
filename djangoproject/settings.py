@@ -84,9 +84,14 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'data' / 'db.sqlite3',
+    },
+    'app_l2': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'data' / 'db_app_l2.sqlite3',
     }
 }
 
+DATABASE_ROUTERS = ['apps.lections.l2.l2app.dbRouter.l2DBRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

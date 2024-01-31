@@ -89,6 +89,17 @@ example `python3 manage.py migrate l2app`
 
 ---
 
+You can use separate database per app
+For that you need to:
+1) define new database
+2) create dbRouter (see example in apps.lections.l2.l2app.dbRouter)
+3) add dbRouter to $project.settings.py:DATABASE_ROUTERS
+4) perform migration for app and set datatabase name `python3 manage.py migrate l2app --database=app_l2`
+
+If you not set `--database` parameter Table structure will be applied to 'default' database
+
+---
+
 You can create custom commands for admin actions using `manage.py ...`  
 Command name must be unique or will be overwritten https://docs.djangoproject.com/en/5.0/howto/custom-management-commands/#overriding-commands
 
