@@ -1,4 +1,6 @@
-from django.db import models
+from django.db.models import Model, CharField, EmailField, DateTimeField
+from django.db.models import TextField, DecimalField, IntegerField, BooleanField
+from django.db.models import ForeignKey, RESTRICT, ManyToManyField
 
 """
 Клиент может иметь несколько заказов.
@@ -25,3 +27,34 @@ from django.db import models
 * общая сумма заказа
 * дата оформления заказа
 """
+
+
+class ClientModel(Model):
+    name = CharField(max_length=15)
+    email = EmailField()
+    phone = CharField(max_length=15)
+    address = CharField(max_length=200)
+    registered = DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Client {self.name}, @: {self.email}, №: {self.phone}"
+
+
+class ProductModel(Model):
+    name = CharField(max_length=50)
+    description = TextField()
+    cost = DecimalField(max_digits=8, decimal_places=2)
+    amount = IntegerField(default=0)
+    # Полагаю, что дата добавления это время регистрации, а не последнее пополнение количества
+    created = DateTimeField(auto_now_add=True)
+    # (Extra field) флаг удаления
+    deleted = BooleanField(default=False)
+
+
+class OrderModel(Model):
+    client = ForeignKey(ClientModel, on_delete=RESTRICT)
+    products = ManyToManyField(ProductModel)
+    total_amount = DecimalField(max_digits=8, decimal_places=2)
+    registration_date = DateTimeField(auto_now_add=True)  # Оформление -> дата создания
+    # (Extra field) Дата выполнения, можно использовать как флаг завершённых заказов
+    applied_date = DateTimeField(auto_now=True, null=True)
