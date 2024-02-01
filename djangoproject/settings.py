@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'apps.lections.l1.l1app',
     'apps.lections.l2.l2app',
     'apps.seminars.s1.s1app',
+    'apps.seminars.s2.s2app',
+    'apps.seminars.s2.s2Forumapp',
     'apps.hw.hw1app',
 ]
 
