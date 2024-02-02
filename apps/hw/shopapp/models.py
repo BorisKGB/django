@@ -50,11 +50,24 @@ class ProductModel(Model):
     # (Extra field) флаг удаления
     deleted = BooleanField(default=False)
 
+    def __str__(self):
+        return f"Product {self.name}, cost: {self.cost}, amount: {self.amount}{', deleted' if self.deleted else ''}"
+
 
 class OrderModel(Model):
     client = ForeignKey(ClientModel, on_delete=RESTRICT)
     products = ManyToManyField(ProductModel)
-    total_amount = DecimalField(max_digits=8, decimal_places=2)
+    total_amount = DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
     registration_date = DateTimeField(auto_now_add=True)  # Оформление -> дата создания
     # (Extra field) Дата выполнения, можно использовать как флаг завершённых заказов
     applied_date = DateTimeField(auto_now=True, null=True)
+
+    def __str__(self):
+        return f"Order from {self.client.name} for {self.products.all()}, total at {self.total_amount}, " + \
+                   f"{'done' if self.applied_date else 'in progress'}"
+
+    def save(self, *args, **kwargs):
+        self.total_amount = 0
+        for product in self.products.all():
+            self.total_amount += product.cost
+        return super().save(*args, **kwargs)
