@@ -57,17 +57,16 @@ class ProductModel(Model):
 class OrderModel(Model):
     client = ForeignKey(ClientModel, on_delete=RESTRICT)
     products = ManyToManyField(ProductModel)
-    total_amount = DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    # total_amount field will be handled by m2m_changed signal
+    total_amount = DecimalField(max_digits=8, decimal_places=2, default=0)
     registration_date = DateTimeField(auto_now_add=True)  # Оформление -> дата создания
     # (Extra field) Дата выполнения, можно использовать как флаг завершённых заказов
-    applied_date = DateTimeField(auto_now=True, null=True)
+    applied_date = DateTimeField(null=True)
 
     def __str__(self):
-        return f"Order from {self.client.name} for {self.products.all()}, total at {self.total_amount}, " + \
-                   f"{'done' if self.applied_date else 'in progress'}"
-
-    def save(self, *args, **kwargs):
-        self.total_amount = 0
-        for product in self.products.all():
-            self.total_amount += product.cost
-        return super().save(*args, **kwargs)
+        result = f"Order from {self.client.name} "
+        # got recursion error if access M2M field before saving object to DB
+        result += f"for {0 if self._state.adding else self.products.count()} products, "
+        result += f"total at {self.total_amount}. "
+        result += f"Order {'closed' if self.applied_date else 'is open.'}"
+        return result
