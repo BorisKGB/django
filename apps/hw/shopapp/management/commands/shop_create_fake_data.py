@@ -47,7 +47,7 @@ class Command(BaseCommand):
                 product.amount -= 1
                 product.save()
                 order_products.append(product)
-            order.products.add(*order_products)
+            order.products.set(order_products)
             self.stdout.write(f"Created {order}")
 
         self.stdout.write("Fake data created")
