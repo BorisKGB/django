@@ -135,6 +135,9 @@ get:
     #  all()[:5] -> LIMIT 5 (get first 5 objects)
     #  negative indexing not available [-1] cann not be done
     #  all()[:10:2] -> will get every second object from first 10. This query will be executed at place because 'every second' will need to get the data
+  You can get onjects from ManyToMany relation fields like in normal get request
+    order = OrderModel.objects.filter(pk=order_id).first()
+    order.products.all() # and other get options
 ``` 
   more https://metanit.com/python/django/5.13.php https://djangodoc.ru/3.2/topics/db/queries/ 
 
@@ -151,6 +154,14 @@ delete:
   if user is not None:  # check record existence
     user.delete()  # delete it
 ```
+
+---
+
+It is possible to create hooks on some actions.
+read https://docs.djangoproject.com/en/5.0/topics/signals/
+
+As Example in apps.hw.shopapp i use m2m_changed signal to update field after related objects change
+You need to create signal method and register it in app.ready method
 
 ---
 
