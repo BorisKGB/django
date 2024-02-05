@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'apps.seminars.s2.s2app',
     'apps.seminars.s2.s2Forumapp',
     'apps.hw.hw1app',
+    'apps.hw.shopapp'
 ]
 
 MIDDLEWARE = [
@@ -90,10 +91,17 @@ DATABASES = {
     'app_l2': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'data' / 'db_app_l2.sqlite3',
+    },
+    'shop_db': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'data' / 'shop_db.sqlite3',
     }
 }
 
-DATABASE_ROUTERS = ['apps.lections.l2.l2app.dbRouter.l2DBRouter']
+DATABASE_ROUTERS = [
+    'apps.lections.l2.l2app.dbRouter.l2DBRouter',
+    'apps.hw.shopapp.dbRouter.ShopDBRouter',
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
