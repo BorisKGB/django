@@ -23,5 +23,6 @@ urlpatterns = [
     path('lections/l3/', include('apps.lections.l3.l3app.urls')),
     path('seminars/s1/', include('apps.seminars.s1.s1app.urls')),
     path('seminars/s3/', include('apps.seminars.s3.s3app.urls')),
-    path('hw/hw1/', include('apps.hw.hw1app.urls'))
+    path('hw/hw1/', include('apps.hw.hw1app.urls')),
+    path('hw/shop/', include('apps.hw.shopapp.urls'))
 ]
