@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Client №{{ client_id }} product report</title>
+    <style type="text/css">
+        table {
+            border-collapse: collapse;
+            border: 2px solid rgb(140 140 140);
+            font-family: sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+        th, td {
+            border: 1px solid rgb(160 160 160);
+            padding: 8px 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<h1>Client №{{ client_id }} product report</h1>
+{% if orders_list %}
+<p>Info for last {% if range_name %}{{ range_name }}{% else %}{{ range }} days{% endif %}.</p>
+<p>Information collected from orders {{  orders_list }}</p>
+<p>Products</p>
+<table>
+  <thead>
+    <tr>
+      <th scope="col" >Product</th>
+      <th scope="col" >Purchased</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for product_name, amount in products_info.items %}
+    <tr>
+      <td>{{ product_name }}</td>
+      <td>{{ amount }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No data</p>
+{% endif %}
+</body>
+</html>
