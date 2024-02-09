@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'apps.lections.l1.l1app',
     'apps.lections.l2.l2app',
     'apps.lections.l3.l3app',
+    'apps.lections.l4.l4app',
     'apps.seminars.s1.s1app',
     'apps.seminars.s2.s2app',
     'apps.seminars.s2.s2Forumapp',
@@ -143,6 +144,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -179,6 +183,11 @@ LOGGING = {
             'level': 'INFO',
         },
         'apps.lections.l1.l1app': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'apps.lections.l4.l4app': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,

@@ -237,3 +237,72 @@ For example adding record `BASE_DIR / 'templates'` will allow you to drop all yo
 
 ---
 
+You can use forms in django, for that you need:
+* ensure you set SECRET_KEY in project settings for csrf_token generation
+* create `$app/forms.py` with your form objects describes form fields
+* create correspond views (see example for form request handling in l4app)
+  * To get data from form you need on POST request get form object and access data by dictionary `form.cleaned_data`
+* connect view to urls
+* create template and add form to it.
+  * You can just use in template `{{ form }}` it will create basic html code for form fields
+    * But you still need to add "send" button and form html block
+    * You can use `{{ form.as_p }}` to render form fields in `<p>` tags, by default it will render with `<div>`
+      * also there is `.as_p`, `.as_ul`, `.as_div`, `.as_table`
+  * You also need to add csrf_token to form html block
+
+---
+
+In forms you can use
+https://docs.djangoproject.com/en/5.0/ref/forms/fields/#built-in-field-classes, some of them: 
+```
+    CharField
+    EmailField
+    IntegerField
+    FloatField
+    BooleanField
+    DateTimeField
+    FileField - upload file
+    ImageField - upload exactly image
+    ChoiceField - Enum like field
+```
+
+All forms automatically have their widget set according to field type
+For some types you may want to set widget type manually
+
+https://docs.djangoproject.com/en/5.0/ref/forms/widgets/, some widgets:
+```
+    TextInput
+    TextArea - multyline text
+    PasswordInput - hidden text
+    NumberInput
+    CheckboxInput
+    DateTimeInput
+    FileInput
+    Select
+    RadioSelect - Select variant
+```
+
+also you can use widgets to set html element attributes like
+`message = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}))`
+will set this field html tag class to 'form-control'
+or set 'placeholder' for empty field message like `widget=forms.TextInput(attrs={'placeholder': 'help str here'})`
+
+---
+
+You can add custom validators for you form fields
+
+For that in form class add methods named by f'clean_{field_name}' and raise forms.ValidationError on unexpected data
+https://docs.djangoproject.com/en/5.0/ref/forms/validation/#cleaning-a-specific-field-attribute
+
+---
+
+If you want to upload files in you project you need to:
+* set project level settings
+  * MEDIA_URL defines url addr for access uploaded files
+    * Need to be connected to app.urls to be able to use it
+  * MEDIA_ROOT defines path in project to store files, will be created by django when needed
+* in template set `enctype="multipart/form-data"` for form tag 
+* get file in form view from `cleaned_data`
+  * On create form object also need to access `request.FILES`
+* save file using `django.core.files.storage.FileSystemStorage.save(name, file_obj_from_cleaned_data)`
+* 
