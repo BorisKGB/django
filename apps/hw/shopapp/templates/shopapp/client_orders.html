@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Client №{{ client_id }} orders</title>
+</head>
+<body>
+<h1>Client №{{ client_id }} orders</h1>
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+    {% if orders %}
+    {% for order in orders %}
+    <div style="border: 1px solid black; border-radius: 10px; padding: 5px;">
+        <p>Order number {{ order.pk }}</p>
+        <p>From {{ order.client.name }}</p>
+        <p>Created at {{ order.registration_date }}</p>
+        <p>Total amount: {{ order.total_amount }}</p>
+        {% if applied_date %}
+        <p>Order closed at {{ order.applied_date }}</p>
+        {% else %}
+        <p>Order still open</p>
+        {% endif %}
+        <p>Products:</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+            {% for product in order.products.all %}
+            <div style="border: 1px solid black; border-radius: 10px; padding: 5px;">
+                <p>{{ product.name }}</p>
+                <p>Cost: {{ product.cost }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>No data</p>
+    {% endif %}
+</div>
+</body>
+</html>
