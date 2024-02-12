@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'apps.seminars.s2.s2app',
     'apps.seminars.s2.s2Forumapp',
     'apps.seminars.s3.s3app',
+    'apps.seminars.s4.s4app',
     'apps.hw.hw1app',
     'apps.hw.shopapp'
 ]
