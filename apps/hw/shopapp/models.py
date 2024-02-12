@@ -1,5 +1,5 @@
 from django.db.models import Model, CharField, EmailField, DateTimeField
-from django.db.models import TextField, DecimalField, IntegerField, BooleanField
+from django.db.models import TextField, DecimalField, IntegerField, BooleanField, ImageField
 from django.db.models import ForeignKey, RESTRICT, ManyToManyField
 
 """
@@ -49,6 +49,7 @@ class ProductModel(Model):
     created = DateTimeField(auto_now_add=True)
     # (Extra field) флаг удаления
     deleted = BooleanField(default=False)
+    image = ImageField(upload_to='shopapp/images/', default=None, null=True, blank=True)
 
     def __str__(self):
         return f"Product {self.name}, cost: {self.cost}, amount: {self.amount}{', deleted' if self.deleted else ''}"
