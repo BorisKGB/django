@@ -305,4 +305,69 @@ If you want to upload files in you project you need to:
 * get file in form view from `cleaned_data`
   * On create form object also need to access `request.FILES`
 * save file using `django.core.files.storage.FileSystemStorage.save(name, file_obj_from_cleaned_data)`
-* 
+
+---
+
+By default django has enabled admin web interface
+It`s language corresponds to project LANGUAGE_CODE setting
+
+For being able to use admin interface need to create superuser
+`python manage.py createsuperuser [--username username] [--email email] [and other optional parameters]`
+command will interactively ask for username, email and password
+
+you can also change password using
+`python manage.py changepassword <username>`
+
+Be shure to apply service level application migrations (admin, auth, ...) or just make them for all apps
+
+By default you can perform CRUD operations over internal users and groups
+
+---
+
+To be able to perform CRUD operations over custom models you need:
+* create model (makegigration/migrate)
+* if you not admin - add permissions to edit model
+* add model to admin panel in $app:admin.py using `admin.site.register(Model)` for each model
+  * see l3app.admin as example
+
+You can modify how admin interface represent Model for this you need to
+* create a class inherited from `admin.ModelAdmin`
+* Use this class to describe modifications for admin interface
+* Connect this class to model registration in $app:admin.py for example `admin.site.register(MyModel, MyModelAdminConfig)`
+
+Using `ModelAdmin` you can perform
+* for model object table
+  * change list of default fields to represent model object in a table
+    * by default it will use __str__ method of model
+    * you can set `list_display = ['model_field_name_1', 'model_field_name_N']` to show only this fields 
+      * after set this option interface will allow you to use order by this fields
+  * add default field ordering
+    * using `ordering = ['field_name_to_order_1', 'field_name_to_order_N']` (multy level ordering allowed)
+    * by adding '-' before field_name you reverse ordering
+  * add filtering to fields
+    * using `list_filter = ['field_to_filter_1', 'field_to_filter_N']`
+    * available filters will depend on field type
+  * allow search operations on fields
+    * using `search_fields = ['field_to_search_1', 'field_to_search_N']`. If set multiple fields it will be OR(field) search
+    * and `search_help_text = 'Use to search by ....`. Only one help string
+  * add custom actions
+    * create action method with decorator `@admin.adtion()`
+      * decorator parameter `description='Action description'`
+      * preferred method parameters
+        * modeladmin
+        * request
+        * queryset - objects to which action will be applied
+        * https://docs.djangoproject.com/en/5.0/ref/contrib/admin/actions/#writing-action-functions
+    * connect method to `ModelAdmin` using `actions = [action_method_1, action_method_N]`
+* for model object itself (change block)
+  * set field list to show
+    * using `fields = ['model_field_name_1', 'model_field_name_N']`
+    * as example may be needed to show fields with default values
+  * mark fields to read only
+    * using `readonly_fields = ['model_field_name_1', 'model_field_name_N']`
+  * more detailed fields config using fieldsets
+    * conflicts with `fields` parameter
+    * allow to control fields layouts, groups, ...
+    * https://docs.djangoproject.com/en/5.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.fieldsets
+* https://docs.djangoproject.com/en/5.0/ref/contrib/admin/#modeladmin-objects
+
