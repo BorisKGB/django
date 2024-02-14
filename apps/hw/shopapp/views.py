@@ -1,7 +1,8 @@
 from django.views.generic import TemplateView
-from .models import OrderModel
+from .models import OrderModel, ProductModel
+from .forms import NewProductForm
 from django.http import HttpResponse, Http404
-from django.shortcuts import render
+from django.shortcuts import render, redirect, reverse
 from datetime import datetime, timedelta
 
 
@@ -47,3 +48,21 @@ class ClientProductsReport(TemplateView):
             raise Http404
         context['orders_list'], context['products_info'] = self.get_products(context['client_id'], context['range'])
         return context
+
+
+def product_info(request, product_id):
+    product = ProductModel.objects.filter(pk=product_id).first()
+    print(product)
+    return render(request, 'shopapp/product_info.html',
+                  context={'product': product, 'product_id': product_id})
+
+
+def new_product(request):
+    if request.method == 'POST':
+        form = NewProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save()
+            return redirect(reverse('product_info', args=[product.pk]))
+    else:
+        form = NewProductForm()
+    return render(request, 'shopapp/create_product.html', context={'form': form})
