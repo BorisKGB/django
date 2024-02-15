@@ -23,6 +23,12 @@ class ClientAdmin(ModelAdmin):
     search_fields = ['name', 'email']
     search_help_text = 'Search by name or email'
 
+    readonly_fields = ['id', 'registered']
+    fieldsets = [
+        (None, {'fields': ['id', 'name', 'registered']}),
+        ('Contact info', {'fields': ['email', 'phone', 'address']})
+    ]
+
 
 class HasImageFilter(SimpleListFilter):
     """https://docs.djangoproject.com/en/5.0/ref/contrib/admin/filters/#using-a-simplelistfilter"""
@@ -48,6 +54,13 @@ class ProductAdmin(ModelAdmin):
     search_help_text = 'Search by name'
     actions = [product_reset_amount, product_mark_delete]
 
+    readonly_fields = ['id', 'created', 'deleted']
+    fieldsets = [
+        (None, {'fields': ['id', 'name', 'created', 'deleted']}),
+        ('Description', {'classes': ['collapse'], 'fields': ['description', 'image']}),
+        ('Shop info', {'fields': ['cost', 'amount']})
+    ]
+
     @display(boolean=True)
     def has_image(self, product: ProductModel) -> bool:
         return bool(product.image)
@@ -59,6 +72,13 @@ class OrderAdmin(ModelAdmin):
     ordering = ['id']
     search_fields = ['client__name', 'client__email']
     search_help_text = 'Search by client name or email'
+
+    readonly_fields = ['id', 'total_amount', 'is_open', 'registration_date']
+    fieldsets = [
+        (None, {'fields': ['id', 'client', 'registration_date', 'is_open']}),
+        ('Content', {'fields': ['products', 'total_amount'],
+                     'description': 'total_amount will be automatically updated after order change'})
+    ]
 
     def client_name(self, order: OrderModel) -> str:
         return order.client.name
