@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-aup=qiyaj3c(72sdnq9r71rl4jrn^e7)quq9istl^-)!_#9nst'
+# SECRET_KEY = 'django-insecure-aup=qiyaj3c(72sdnq9r71rl4jrn^e7)quq9istl^-)!_#9nst'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -30,6 +32,14 @@ ALLOWED_HOSTS = [
     # '127.0.0.1',  # no need it anymore
 ]
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
+CSRF_TRUSTED_ORIGINS = ['http://193.124.191.150']
+
+# SESSION_COOKIE_SECURE = False
+# CSRF_COOKIE_SECURE = True
 
 # Application definition
 
@@ -50,10 +60,12 @@ INSTALLED_APPS = [
     'apps.seminars.s3.s3app',
     'apps.seminars.s4.s4app',
     'apps.hw.hw1app',
-    'apps.hw.shopapp'
+    'apps.hw.shopapp',
+    'debug_toolbar'
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -139,6 +151,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'static/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

@@ -28,7 +28,8 @@ urlpatterns = [
     path('seminars/s3/', include('apps.seminars.s3.s3app.urls')),
     path('seminars/s4/', include('apps.seminars.s4.s4app.urls')),
     path('hw/hw1/', include('apps.hw.hw1app.urls')),
-    path('hw/shop/', include('apps.hw.shopapp.urls'))
+    path('hw/shop/', include('apps.hw.shopapp.urls')),
+    path('__debug__', include("debug_toolbar.urls"))
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -371,3 +371,32 @@ Using `ModelAdmin` you can perform
     * https://docs.djangoproject.com/en/5.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.fieldsets
 * https://docs.djangoproject.com/en/5.0/ref/contrib/admin/#modeladmin-objects
 
+---
+
+django debug toolbar https://django-debug-toolbar.readthedocs.io/en/latest/
+
+1. install package `django-debug-toolbar`
+2. configure project settings
+   1. add `INTERNAL_IPS` list
+   2. add 'debug_toolbar' to `INSTALLED_APPS`
+   3. add 'debug_toolbar.middleware.DebugToolbarMiddleware' to `MIDDLEWARE`
+3. add it to urlpatterns `path('__debug__', include("debug_toolbar.urls"))`
+
+---
+
+publish project
+
+1. modify project settings
+   1. disable DEBUG
+   2. add boolean true parameters `SESSION_COOKIE_SECURE` and `CSRF_COOKIE_SECURE`
+   3. make `SECRET_KEY` more secret, for example by `os.getenv('SECRET_KEY')`
+      1. after that test server can be launched by `$ SECRET_KEY="dasdasd" python3 manage.py ...` 
+   4. ensure all media and static root variables point inside project directory using `BASE_DIR / 'static/'`
+2. reconfigure your database to something project related
+   1. optionally set COLLATE to utf-8
+   2. for DB options like password you also are able to use `os.getenv()`
+3. optionally disable all not required urlpatterns
+4. create requirements.txt
+   1. optionally manual add to requirements `python-dotenv` and your sql client python library
+5. create wsgi file for your django app
+6. 

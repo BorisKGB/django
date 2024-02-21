@@ -10,7 +10,8 @@ def user_action(request):
             attempts = form.cleaned_data['attempts']
             if form.cleaned_data.get('action') == 'coin':
                 # redirect to view from s3app by url name with parameters
-                return redirect(reverse('coin', args=[attempts]))
+                # return redirect(reverse('coin', args=[attempts]))
+                return redirect('coin', number=attempts)
             elif form.cleaned_data.get('action') == 'dice':
                 # unable to correctly modify request on the go
                 # # probably should not do that, without this i get 405 method not allowed
