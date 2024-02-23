@@ -13,6 +13,14 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 
+
+def parse_bool_env(env_name: str, true_choices: tuple = ('true', '1'), default=False) -> bool:
+    var = os.getenv(env_name)
+    if var is not None:
+        return var.lower() in true_choices
+    return default
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,26 +28,42 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-aup=qiyaj3c(72sdnq9r71rl4jrn^e7)quq9istl^-)!_#9nst'
-SECRET_KEY = os.getenv('SECRET_KEY')
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = parse_bool_env('DEBUG')
 
-ALLOWED_HOSTS = [
-    '*',  # allow access to anyone
-    # '127.0.0.1',  # no need it anymore
-]
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('SECRET_KEY')
+if DEBUG and SECRET_KEY is None:
+    SECRET_KEY = 'django-insecure-aup=qiyaj3c(72sdnq9r71rl4jrn^e7)quq9istl^-)!_#9nst'
 
-INTERNAL_IPS = [
-    '127.0.0.1',
-]
+ALLOWED_HOSTS = []
+_domain_name = os.getenv('DOMAIN_NAME')
+if _domain_name is not None:
+    ALLOWED_HOSTS.append(_domain_name)
 
-CSRF_TRUSTED_ORIGINS = ['http://193.124.191.150']
+if DEBUG and '*' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('*')
 
-# SESSION_COOKIE_SECURE = False
-# CSRF_COOKIE_SECURE = True
+if DEBUG:
+    INTERNAL_IPS = [
+        '127.0.0.1',
+    ]
+
+CSRF_TRUSTED_ORIGINS = []
+_http = os.getenv('HTTP')
+if _domain_name is not None and _http is not None:
+    CSRF_TRUSTED_ORIGINS.append(f"http://{_domain_name}")
+
+_https = os.getenv('HTTPS')
+if _domain_name is not None and _http is not None:
+    CSRF_TRUSTED_ORIGINS.append(f"https://{_domain_name}")
+
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS.append('http://localhost')
+    CSRF_TRUSTED_ORIGINS.append('http://127.0.0.1')
+
+SESSION_COOKIE_SECURE = parse_bool_env('SESSION_COOKIE_SECURE')
+CSRF_COOKIE_SECURE = parse_bool_env('CSRF_COOKIE_SECURE')
 
 # Application definition
 
@@ -50,22 +74,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.lections.l1.l1app',
-    'apps.lections.l2.l2app',
-    'apps.lections.l3.l3app',
-    'apps.lections.l4.l4app',
-    'apps.seminars.s1.s1app',
-    'apps.seminars.s2.s2app',
-    'apps.seminars.s2.s2Forumapp',
-    'apps.seminars.s3.s3app',
-    'apps.seminars.s4.s4app',
-    'apps.hw.hw1app',
     'apps.hw.shopapp',
-    'debug_toolbar'
 ]
 
+if DEBUG:
+    INSTALLED_APPS.append('debug_toolbar')
+
 MIDDLEWARE = [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -74,6 +89,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if DEBUG:
+    MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
 
 ROOT_URLCONF = 'djangoproject.urls'
 
@@ -101,20 +119,27 @@ WSGI_APPLICATION = 'djangoproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'data' / 'db.sqlite3',
-    },
-    'app_l2': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'data' / 'db_app_l2.sqlite3',
-    },
-}
-
-DATABASE_ROUTERS = [
-    'apps.lections.l2.l2app.dbRouter.l2DBRouter',
-]
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'data' / 'db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": os.getenv("MYSQL_DBNAME"),
+            "USER": os.getenv("MYSQL_USER"),
+            "PASSWORD": os.getenv("MYSQL_PASSWORD"),
+            "HOST": os.getenv("MYSQL_HOST"),
+            "OPTIONS": {
+                "init_command": "SET NAMES 'utf8mb4';SET sql_mode = 'STRICT_TRANS_TABLES'",
+                "charset": "utf8mb4",
+            },
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -163,43 +188,44 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # logging parameters
 # https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'simple': {
-            'format': '%(levelname)s %(message)s',
+if parse_bool_env('CUSTOM_LOGGING'):
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'simple': {
+                'format': '%(levelname)s %(message)s',
+            },
+            'verbose': {
+                'format': '{levelname} {asctime} {module} {process} {thread} {message}',
+                'style': '{',
+            },
         },
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process} {thread} {message}',
-            'style': '{',
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'verbose',
+            },
+            'file': {
+                'class': 'logging.FileHandler',
+                'filename': 'logs/django.log',
+                'formatter': 'simple',
+            },
         },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
+        'loggers': {
+            'django': {
+                'handlers': ['console', 'file'],
+                'level': 'INFO',
+            },
+            'apps.lections.l1.l1app': {
+                'handlers': ['console'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+            'apps.lections.l4.l4app': {
+                'handlers': ['console'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
         },
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': 'logs/django.log',  # './logs/django.logs'? why './'
-            'formatter': 'simple',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-        },
-        'apps.lections.l1.l1app': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'apps.lections.l4.l4app': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
-}
+    }
