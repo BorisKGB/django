@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 try:
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'djangoproject.settings')

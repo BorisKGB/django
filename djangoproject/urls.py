@@ -21,15 +21,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('lections/l1/', include('apps.lections.l1.l1app.urls')),
-    path('lections/l3/', include('apps.lections.l3.l3app.urls')),
-    path('lections/l4/', include('apps.lections.l4.l4app.urls')),
-    path('seminars/s1/', include('apps.seminars.s1.s1app.urls')),
-    path('seminars/s3/', include('apps.seminars.s3.s3app.urls')),
-    path('seminars/s4/', include('apps.seminars.s4.s4app.urls')),
-    path('hw/hw1/', include('apps.hw.hw1app.urls')),
-    path('hw/shop/', include('apps.hw.shopapp.urls')),
-    path('__debug__', include("debug_toolbar.urls"))
+    path('', include('apps.hw.shopapp.urls')),
 ]
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    urlpatterns.append(path('__debug__', include("debug_toolbar.urls")))
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

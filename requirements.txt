@@ -1,0 +1,7 @@
+asgiref
+Django>=5
+django-debug-toolbar
+mysqlclient
+pillow
+sqlparse
+python-dotenv

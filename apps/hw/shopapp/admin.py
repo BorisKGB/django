@@ -1,9 +1,7 @@
-from django.contrib.admin import AdminSite, ModelAdmin, site, display
+from django.contrib.admin import ModelAdmin, site, display
 from django.contrib.admin import SimpleListFilter, action as add_action
 from django.utils.translation import gettext_lazy
 from .models import ClientModel, ProductModel, OrderModel
-
-shop_admin = AdminSite(name='shop_db')
 
 
 @add_action
@@ -92,8 +90,3 @@ site.register(ClientModel, ClientAdmin)
 site.register(ProductModel, ProductAdmin)
 site.register(OrderModel, OrderAdmin)
 site.disable_action('delete_selected')
-
-shop_admin.register(ClientModel, ClientAdmin)
-shop_admin.register(ProductModel, ProductAdmin)
-shop_admin.register(OrderModel, OrderAdmin)
-shop_admin.disable_action('delete_selected')
